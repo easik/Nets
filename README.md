@@ -15,3 +15,7 @@ sudo apt install nodejs
 sudo apt-get install npm
 
 After that you're good to go!
+
+# To run the project
+
+node index.js
