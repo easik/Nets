@@ -7,12 +7,48 @@ var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 // var port = process.env.PORT || 80;
 var port = process.env.PORT || 80;
+var fs = require("fs");  // read 'whitelist.txt' file
 
 server.listen(port, () => {
   console.log('Server listening at port %d', port);
 });
 
-// Routing
+// IP
+
+var WHITELIST = fs.readFileSync("./whitelist.txt").toString('utf-8').split('\n').filter(item => item);  // filter to get rid of last empty item in list
+
+var getClientIp = function(req) {
+  var ipAddress = req.connection.remoteAddress;
+  
+  if (!ipAddress) {
+    return '';
+  }
+
+  // convert from "::ffff:192.0.0.1" to "192.0.0.1"
+  if (ipAddress.substr(0, 7) == "::ffff:") {
+    ipAddress = ipAddress.substr(7)
+  }
+
+  return ipAddress;
+}
+
+// Check if IP's white listed
+
+app.use(function(req, res, next) {
+  var ipAddress = getClientIp(req);
+  if(WHITELIST.indexOf(ipAddress) === -1) {
+    // If not in white list then it's blacklisted
+    // IP is blacklisted
+    res.sendFile(__dirname + "/public/blacklisted.html");
+    console.log('Connected ' + ipAddress + ' IP is blacklisted: not found in whitelist.txt for details.');
+  } else {
+    // IP is NOT blacklisted (whitelisted)
+    //console.log(ipAddress + ' IP connected.'); 
+    next();
+  }
+});
+
+// If IP is accepted proceed: Routing
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Chatroom
