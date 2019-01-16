@@ -1,6 +1,6 @@
 # Nets
 
-Chat written on Node.JS with a WebSocket protocol.
+Chat written in Node.JS with a WebSocket protocol.
 
 'node_modules' folder not included due to it's size.
 
@@ -19,3 +19,5 @@ After that you're good to go!
 # To run the project
 
 node index.js
+
+(you can check running site on local machine by visiting 'localhost' web page)
